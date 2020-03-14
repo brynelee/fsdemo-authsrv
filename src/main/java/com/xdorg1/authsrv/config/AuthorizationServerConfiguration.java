@@ -55,10 +55,26 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 //.passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder())
-                .withClient("webclient")
+                .withClient("webclient1")
                 .secret(passwordEncoder.encode("time4@FUN"))
-                .authorizedGrantTypes("password", "client_credentials")
-                .scopes("all", "read", "write");
+                .authorizedGrantTypes("refresh_token", "password", "client_credentials")
+                .scopes("all", "read", "write")
+
+                .and().withClient("webclient2").authorities("authorization_code", "refresh_token")
+                .secret(passwordEncoder.encode("time4@FUN"))
+                .authorizedGrantTypes("authorization_code")
+                .scopes("all", "read", "write")
+                .accessTokenValiditySeconds(7200)
+                .refreshTokenValiditySeconds(10000)
+                .redirectUris("http://localhost:8084/callback", "http://localhost:8084/signin")
+
+                .and().withClient("webclient3")
+                .secret(passwordEncoder.encode("time4@FUN"))
+                .authorizedGrantTypes("implicit")
+                .scopes("all", "read", "write")
+                .accessTokenValiditySeconds(7200)
+                .refreshTokenValiditySeconds(10000)
+                .redirectUris("http://localhost:8084/callback", "http://localhost:8084/signin");
     }
 
     @Override
