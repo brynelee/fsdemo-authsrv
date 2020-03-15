@@ -91,23 +91,18 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .refreshTokenValiditySeconds(10000)
                 .redirectUris("http://localhost:8084/callback", "http://localhost:8084/signin")
 
-                .and().withClient("fsdemo-frontend")
+                .and().withClient("fsdemo-usercenter")
                 .secret(passwordEncoder.encode("time4@FUN"))
                 .authorizedGrantTypes("refresh_token", "password", "client_credentials")
                 .scopes("all", "read", "write")
 
-                .and().withClient("fsdemofrontend").authorities("authorization_code", "refresh_token")
+                .and().withClient("fsdemo-frontend").authorities("authorization_code", "refresh_token")
                 .secret(passwordEncoder.encode("time4@FUN"))
                 .authorizedGrantTypes("authorization_code")
                 .scopes("all", "read", "write")
                 .accessTokenValiditySeconds(7200)
                 .refreshTokenValiditySeconds(10000)
                 .redirectUris("http://fsdemo-usercenter:8081/usercenter/auth")
-
-                .and().withClient("fsdemo-app")
-                .secret(passwordEncoder.encode("time4@FUN"))
-                .authorizedGrantTypes("refresh_token", "password", "client_credentials")
-                .scopes("all", "read", "write")
 
                 .and().withClient("fsdemoapp").authorities("authorization_code", "refresh_token")
                 .secret(passwordEncoder.encode("time4@FUN"))
