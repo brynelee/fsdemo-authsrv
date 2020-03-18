@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -15,8 +16,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 /*
 spring.security.oauth2.client.authorization-uri=/oauth/authorize
@@ -43,6 +47,35 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
+    @Bean
+    public TokenStore tokenStore(){
+        //使用Redis存储Token
+        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+        //设置redis token存储的前缀
+        redisTokenStore.setPrefix("auth-token:");
+        return redisTokenStore;
+    }
+
+    @Bean
+    public DefaultTokenServices tokenServices(){
+        DefaultTokenServices tokenServices = new DefaultTokenServices();
+
+        //配置token存储
+        tokenServices.setTokenStore(tokenStore());
+        //开启支持refresh_token，此处如果之前没有配置，启动服务后再配置重启服务，可能会导致不返回token的问题，解决方式：清除redis对应token存储
+        tokenServices.setSupportRefreshToken(true);
+        //复用refresh_token
+        tokenServices.setReuseRefreshToken(true);
+        //token有效期，设置12小时
+        tokenServices.setAccessTokenValiditySeconds(12 * 60 * 60);
+        //refresh_token有效期，设置一周
+        tokenServices.setRefreshTokenValiditySeconds(7 * 24 * 60 * 60);
+        return tokenServices;
+    }
+
     /**
      * 自定义用户信息
      *
@@ -53,18 +86,18 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         return new UserDetailsServiceImpl();
     }
 
-    @Bean
+    /*@Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey("test-secret");
         return converter;
-    }
+    }*/
 
-    @Bean
+    /*@Bean
     public JwtTokenStore jwtTokenStore() {
         return new JwtTokenStore(accessTokenConverter());
     }
-
+*/
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -117,9 +150,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .authenticationManager(authenticationManager)
-                .tokenStore(jwtTokenStore())
-                .accessTokenConverter(accessTokenConverter())
-                .userDetailsService(userDetailsService());
+  //              .tokenStore(jwtTokenStore())
+  //            .accessTokenConverter(accessTokenConverter())
+                .userDetailsService(userDetailsService())
+                //配置token的服务和存储
+                .tokenServices(tokenServices())
+                .tokenStore(tokenStore());
     }
 
     @Override

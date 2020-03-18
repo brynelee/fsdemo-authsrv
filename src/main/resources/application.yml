@@ -6,4 +6,12 @@ spring:
     username: xiaodong
     password: time4@FUN
     driver-class-name: com.mysql.cj.jdbc.Driver
+  #redis配置数据
+  redis:
+    hostName: xdredis
+    port: 6379
+    database: 0
+    password:
+    timeout: 5000
+
 debug: false
