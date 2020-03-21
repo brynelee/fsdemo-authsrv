@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -20,7 +19,6 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 /*
 spring.security.oauth2.client.authorization-uri=/oauth/authorize
@@ -47,7 +45,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
+/*    @Autowired
     private RedisConnectionFactory redisConnectionFactory;
 
     @Bean
@@ -57,9 +55,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         //设置redis token存储的前缀
         redisTokenStore.setPrefix("auth-token:");
         return redisTokenStore;
-    }
+    }*/
 
-    @Bean
+/*    @Bean
     public DefaultTokenServices tokenServices(){
         DefaultTokenServices tokenServices = new DefaultTokenServices();
 
@@ -74,7 +72,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         //refresh_token有效期，设置一周
         tokenServices.setRefreshTokenValiditySeconds(7 * 24 * 60 * 60);
         return tokenServices;
-    }
+    }*/
 
     /**
      * 自定义用户信息
@@ -86,18 +84,17 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         return new UserDetailsServiceImpl();
     }
 
-    /*@Bean
+    @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey("test-secret");
         return converter;
-    }*/
+    }
 
-    /*@Bean
+    @Bean
     public JwtTokenStore jwtTokenStore() {
         return new JwtTokenStore(accessTokenConverter());
     }
-*/
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -150,12 +147,16 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .authenticationManager(authenticationManager)
-  //              .tokenStore(jwtTokenStore())
-  //            .accessTokenConverter(accessTokenConverter())
-                .userDetailsService(userDetailsService())
+                //for JWT begin
+                .tokenStore(jwtTokenStore())
+                .accessTokenConverter(accessTokenConverter())
+                //for JWT end
+                .userDetailsService(userDetailsService());
                 //配置token的服务和存储
-                .tokenServices(tokenServices())
-                .tokenStore(tokenStore());
+                //for RedisTokenStore begin
+//                .tokenServices(tokenServices())
+//                .tokenStore(tokenStore());
+                //for RedisTokenStore end
     }
 
     @Override
