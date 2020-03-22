@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
         logger.info("UserServiceImpl findByUsername was called with userName as: " + userName);
 
-        //todo: using restful api to get userentity information
+        //using restful api to get userentity information /usercenter/user?username={username}
         //input: String username
         //output: username, password, mobile, userid, status, email
         Map<String, String> urlVariables = new HashMap<String, String>();
