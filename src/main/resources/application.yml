@@ -17,4 +17,4 @@ fsdemo:
   usercenter:
     userinfourl: http://fsdemo-usercenter:8081/usercenter/user?username={username}
 
-debug: false
+debug: true
