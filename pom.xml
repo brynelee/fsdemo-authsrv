@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.xdorg1</groupId>
-    <artifactId>authsrv</artifactId>
+    <artifactId>fsdemo-authsrv</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>authsrv</name>
+    <name>fsdemo-authsrv</name>
     <description>Authorization server of fsdemo project</description>
 
     <properties>
