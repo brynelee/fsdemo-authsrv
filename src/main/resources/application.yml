@@ -13,5 +13,8 @@ spring:
 #    database: 0
 #    password:
 #    timeout: 5000
+fsdemo:
+  usercenter:
+    userinfourl: http://fsdemo-usercenter:8081/usercenter/user?username={username}
 
 debug: false

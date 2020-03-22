@@ -26,7 +26,6 @@ public class UserEntity {
 
     public void setUserId(int id) { user_id = id; }
 
-
     public String getMobile() {
         return mobile;
     }

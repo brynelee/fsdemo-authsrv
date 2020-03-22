@@ -31,6 +31,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(userName);
         }
 
+        //todo: based on the user inforamtion and his/her role get the authorities, currently it's a demo implementation
+
         // List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 //        for (SysRole role : sysUser.getRoleList()) {
 //            for (SysPermission permission : role.getPermissionList()) {
