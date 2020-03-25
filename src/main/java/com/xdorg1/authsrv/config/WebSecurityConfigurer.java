@@ -12,10 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -31,6 +32,9 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private LogoutSuccessHandler logoutSuccessHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -59,13 +63,19 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 */
 
         //http.csrf().disable();
+
+/*      //原来的设置
         http
                 .requestMatchers().antMatchers("/oauth/**","/login/**","/logout/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/**").authenticated()
                 .and()
-                .formLogin().permitAll(); //新增login form支持用户登录及授权
+                .formLogin()
+                .loginPage("/oauth/login")
+                .loginProcessingUrl("/oauth/authorize")
+                .permitAll(); //新增login form支持用户登录及授权
+*/
 
 
 /*        //不拦截 oauth 开放的资源
@@ -75,6 +85,38 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/oauth/**").permitAll();
 */
+
+        http
+                // 必须配置，不然OAuth2的http配置不生效----不明觉厉
+                .requestMatchers()
+                //.antMatchers("/auth/login", "/auth/authorize","/oauth/authorize")
+                .antMatchers("/auth/**","/oauth/**")
+                .and()
+                .authorizeRequests()
+                // 自定义页面或处理url是，如果不配置全局允许，浏览器会提示服务器将页面转发多次
+                .antMatchers("/auth/login", "/auth/authorize")
+                .permitAll()
+                .anyRequest()
+                .authenticated();
+
+        // 表单登录
+        http.formLogin()
+                // 登录页面
+                .loginPage("/auth/login")
+                // 登录处理url
+                .loginProcessingUrl("/auth/authorize");
+        http.httpBasic().disable();
+
+        //http.logout().permitAll();
+
+/*
+        http
+
+                .logout(l -> l
+                        .logoutSuccessUrl("/exit").permitAll()
+                );
+*/
+        http.logout().logoutSuccessHandler(logoutSuccessHandler);
 
     }
 

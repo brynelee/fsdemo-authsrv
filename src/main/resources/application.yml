@@ -6,6 +6,10 @@ spring:
     username: xiaodong
     password: time4@FUN
     driver-class-name: com.mysql.cj.jdbc.Driver
+#  thymeleaf:
+#    prefix: classpath:/views/
+#    suffix: .html
+#    cache: false
   #redis配置数据
 #  redis:
 #    hostName: xdredis

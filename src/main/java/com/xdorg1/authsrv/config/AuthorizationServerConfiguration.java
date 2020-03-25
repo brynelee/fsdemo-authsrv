@@ -157,6 +157,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 //                .tokenServices(tokenServices())
 //                .tokenStore(tokenStore());
                 //for RedisTokenStore end
+        // 最后一个参数为替换之后授权页面的url
+        endpoints.pathMapping("/oauth/confirm_access","/custom/confirm_access");
     }
 
     @Override
