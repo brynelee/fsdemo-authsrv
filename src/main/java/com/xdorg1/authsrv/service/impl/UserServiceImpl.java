@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,9 +31,10 @@ public class UserServiceImpl implements UserService {
 
      */
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
     /**
      * 根据用户名查询单个用户信息
@@ -72,7 +75,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail("dahai666@sina.com");*/
 
         //temporarily not encoding password in usercenter database
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder().encode(user.getPassword()));
 
         if (user == null) {
             throw new UserFriendlyException("用户不存在!");

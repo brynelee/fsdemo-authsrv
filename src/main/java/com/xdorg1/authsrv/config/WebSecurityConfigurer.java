@@ -25,10 +25,8 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -43,7 +41,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .withUser("dahai").password("666666").roles("USER")
                 .and()
                 .withUser("xiaodong.li").password("123456").roles("USER", "ADMIN");*/
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         auth.parentAuthenticationManager(authenticationManagerBean());
     }
 
