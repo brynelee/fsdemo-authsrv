@@ -16,7 +16,7 @@ kubectl delete -f $1".yml" || true
 sleep 15
 docker rmi registry.cn-hangzhou.aliyuncs.com/xdorg1/$1 || true
 docker rmi xdorg1/$1 || true
-docker build -t xdorg1/$1 -f Dockerfile .
+#docker build -t xdorg1/$1 -f Dockerfile .
 #chmod +x change_image.sh
 #sh change_image.sh $1
 #kubectl apply -f $1".yml"
